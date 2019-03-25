@@ -18,8 +18,7 @@ server.on('request', (req, res) => {
 	res.writeHead(200, {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-CSRF-Token',
-		'Access-Control-Allow-Methods': 'PUT, POST, GET, DELETE, OPTIONS',
-		'Content-type': 'application/x-www-form-urlencoded'
+		'Access-Control-Allow-Methods': 'PUT, POST, GET, DELETE, OPTIONS'
   });
 
 	try { // ( ͡° ͜ʖ ͡°)
