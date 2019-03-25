@@ -34,57 +34,59 @@ server.on('request', (req, res) => {
       }
 
       case 'POST': {
-        let objParam = getParam(req.url);
+				req.on('data', data => {
+					let objParam = JSON.parse(data);
 
-        if (objParam.nickName && !objParam.userId) {
-          let userName = objParam.nickName;
-          let isValidUser = checkIsValid(userName);
+					if (objParam.nickName && !objParam.userId) {
+						let userName = objParam.nickName;
+						let isValidUser = checkIsValid(userName);
 
-          if (!isValidUser) {
-            res.end(createRespStringify(false, null, 'Not valid nickname'));
-            break;
-          }
+						if (!isValidUser) {
+							res.end(createRespStringify(false, null, 'Not valid nickname'));
+							return;
+						}
 
-          let isNewUser = checkIsNew(userName);
+						let isNewUser = checkIsNew(userName);
 
-          if (!isNewUser) {
-            res.end(createRespStringify(false, null, 'User already exist'));
-            break;
-          }
+						if (!isNewUser) {
+							res.end(createRespStringify(false, null, 'User already exist'));
+							return;
+						}
 
-          let userId = createUserId();
+						let userId = createUserId();
 
-          createNewUser(userId, userName);
+						createNewUser(userId, userName);
 
-          res.end(createRespStringify(true, userId));
+						res.end(createRespStringify(true, userId));
 
-          break;
-        } else if (objParam.nickName && objParam.userId && objParam.score && objParam.difficult && objParam.date) {
-          let userNickName = objParam.nickName;
-          let userId = objParam.userId;
-          let score = objParam.score;
-          let difficult = objParam.difficult;
-          let date = objParam.date;
+						return;
+					} else if (objParam.nickName && objParam.userId && objParam.score && objParam.difficult && objParam.date) {
+						let userNickName = objParam.nickName;
+						let userId = objParam.userId;
+						let score = objParam.score;
+						let difficult = objParam.difficult;
+						let date = objParam.date;
 
-          let isUserExist = checkIsUserExist(userNickName, userId);
+						let isUserExist = checkIsUserExist(userNickName, userId);
 
-          if (!isUserExist) {
-            res.end(createRespStringify(false, null, 'User not exist'));
-            break;
-          }
+						if (!isUserExist) {
+							res.end(createRespStringify(false, null, 'User not exist'));
+							return;
+						}
 
-          let isImprovedScore = checkIsImprovedScore(userNickName, score, difficult);
+						let isImprovedScore = checkIsImprovedScore(userNickName, score, difficult);
 
-          if (!isImprovedScore) {
-            res.end(createRespStringify(true, 'Score not better'));
-            break;
-          }
+						if (!isImprovedScore) {
+							res.end(createRespStringify(true, 'Score not better'));
+							return;
+						}
 
-          createScore(userNickName, score, difficult, date);
-          res.end(createRespStringify(true, 'Result is updated'));
-          break;
-        }
-        break;
+						createScore(userNickName, score, difficult, date);
+						res.end(createRespStringify(true, 'Result is updated'));
+						return;
+					}
+					return;
+				});
       }
     }
 
