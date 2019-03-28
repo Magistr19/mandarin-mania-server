@@ -60,7 +60,7 @@ server.on('request', (req, res) => {
 						res.end(createRespStringify(true, userId));
 
 						return;
-					} else if (objParam.nickName && objParam.userId && objParam.score && objParam.difficult && objParam.date) {
+					} else if (objParam.nickName && objParam.userId && isNumeric(objParam.score) && objParam.difficult && objParam.date) {
 						let userNickName = objParam.nickName;
 						let userId = objParam.userId;
 						let score = objParam.score;
@@ -183,14 +183,14 @@ function checkIsNew(nick) {
 
 function createUserId() {
   let date = new Date();
-  date = date.getTime();
+  date = +date.getTime();
 
   return date;
 }
 
 function createNewUser(id, nick) {
   let newUser = {};
-  newUser.userId = '' + id;
+  newUser.userId = id;
   newUser.nickName = nick;
 
   users.push(newUser);
@@ -200,7 +200,7 @@ function createNewUser(id, nick) {
 
 function checkIsUserExist(nick, id) {
   for (let i = 0; i < users.length; i++) {
-    if (users[i].userId === id && users[i].nickName === nick) {
+    if (+users[i].userId === id && users[i].nickName === nick) {
       return true;
     }
   }
@@ -212,7 +212,7 @@ function checkIsImprovedScore(nick, score, difficult) {
 
   for (let i = 0; i < scoreList.length; i++) {
     if (scoreList[i].nickName === nick) {
-      if (scoreList[i].score >= score) {
+      if (+scoreList[i].score >= score) {
         return false;
       } else {
         return true;
@@ -261,4 +261,8 @@ function createScore(nick, score, difficult, date) {
       return;
     }
   }
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
 }
