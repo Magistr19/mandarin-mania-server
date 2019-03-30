@@ -9,12 +9,10 @@ global.mediumRecords = require('./server/database/records/records-medium.json');
 global.hardRecords = require('./server/database/records/records-hard.json');
 global.users = require('./server/database/users/users.json');
 
-let reqRecords = null;
 
 const PORT = 8087;
-let serverUrl = `localhost:${PORT}`
 
-server.on('request', (req, res) => {
+function accept(req, res) {
 	res.writeHead(200, {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-CSRF-Token',
@@ -93,10 +91,11 @@ server.on('request', (req, res) => {
     } catch(err) {
 		res.end(createRespStringify(false, null, '' + err));
   }
-});
+}
 
 
-server.listen(PORT);
+
+http.createServer(accept).listen(PORT);
 console.log(`Server is working on port: ${PORT}`);
 
 
@@ -111,9 +110,15 @@ function createRespStringify(isSuccess, data, errorText) {
 }
 
 function getParam(url) {
-	let obj = {};
-	let startIndex = url.indexOf('?') + 1;
-	let str = url.slice(startIndex);
+  let obj = {};
+  let str;
+
+  if (url.indexOf('?') !== -1) {
+	  let startIndex = url.indexOf('?') + 1;
+	  str = url.slice(startIndex);
+  } else {
+    str = url;
+  }
 
 	while (str !== '') { //Пока строку всю не разобрали
 		if (str.indexOf('&') !== -1) {
